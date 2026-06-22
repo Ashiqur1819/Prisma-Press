@@ -8,7 +8,7 @@ const config = {
     database_url: process.env.DATABASE_URL,
     port: process.env.PORT,
     app_url: process.env.APP_URL,
-    bcrypt_salt_roundS: process.env.BCRYPT_SALT_ROUNDS,
+    bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
     jwt_access_secret: process.env.JWT_ACCESS_SECRET,
     jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
     jwt_access_expiredIn: process.env.JWT_ACCESS_EXPIRED_IN,
