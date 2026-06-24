@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
 import { ILoginPayload, IUserPayload } from "./auth.interface";
+import jwt from "jsonwebtoken";
+import { createToken } from "../../utils/createToken";
 
 // Register user into database
 const registerUserIntoDB = async (payload: IUserPayload) => {
@@ -72,9 +74,27 @@ const loginUser = async (payload: ILoginPayload) => {
     throw new Error("Invalid email or password");
   }
 
-  const { password: _, ...userWithoutPassword } = user;
+  const jwtPayload = {
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  };
 
-  return userWithoutPassword;
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expiredIn as jwt.SignOptions,
+  );
+
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expiredIn as jwt.SignOptions,
+  );
+
+  const { password: _, ...data } = user;
+
+  return { data, accessToken, refreshToken };
 };
 
 export const userService = {
