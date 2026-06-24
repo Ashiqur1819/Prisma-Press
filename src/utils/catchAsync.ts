@@ -9,7 +9,7 @@ export const catchAsync = (fn: RequestHandler) => {
       res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-        message: "Failed to create user",
+        message: (error as Error).message || "Something went wrong",
         error: (error as Error).message,
       });
     }

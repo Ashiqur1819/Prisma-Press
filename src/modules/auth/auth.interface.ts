@@ -4,3 +4,8 @@ export interface IUserPayload {
   password: string;
   profilePhoto?: string;
 }
+
+export interface ILoginPayload {
+  email: string;
+  password: string;
+}
