@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
-import { ILoginPayload, IUserPayload } from "./auth.interface";
+import { ILoginPayload, IRegisterPayload } from "./auth.interface";
 import jwt from "jsonwebtoken";
 import { createToken } from "../../utils/createToken";
 
 // Register user into database
-const registerUserIntoDB = async (payload: IUserPayload) => {
+const registerUserIntoDB = async (payload: IRegisterPayload) => {
   const { name, email, password, profilePhoto } = payload;
 
   const isExistingUser = await prisma.user.findUnique({
@@ -97,7 +97,7 @@ const loginUser = async (payload: ILoginPayload) => {
   return { data, accessToken, refreshToken };
 };
 
-export const userService = {
+export const authService = {
   registerUserIntoDB,
   loginUser,
 };
