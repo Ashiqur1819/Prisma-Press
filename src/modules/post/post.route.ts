@@ -10,8 +10,12 @@ router.post(
   auth(Role.ADMIN, Role.AUTHOR, Role.USER),
   postController.createPost,
 );
-
 router.get("/", postController.getAllPosts);
-router.get("/:postId", postController.getAPostByID)
+router.get(
+  "/my-posts",
+  auth(Role.ADMIN, Role.AUTHOR, Role.USER),
+  postController.getMyPosts,
+);
+router.get("/:postId", postController.getAPostByID);
 
 export const postRouter = router;
