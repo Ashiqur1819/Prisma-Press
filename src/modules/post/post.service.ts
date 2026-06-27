@@ -82,7 +82,7 @@ const getMyPostFromDB = async (authorId: string) => {
   return myPosts
 }
 
-const updatePost = async (postId: string, payload: IUpdatePostPayload, authorId: string, isAdmin: boolean) => {
+const updatePostFromDB = async (postId: string, payload: IUpdatePostPayload, authorId: string, isAdmin: boolean) => {
   const post = await prisma.post.findUniqueOrThrow({
     where: {
       id: postId
@@ -118,10 +118,30 @@ const updatePost = async (postId: string, payload: IUpdatePostPayload, authorId:
   return updatePost
 }
 
+const deletePostFromDB = async (postId: string, authorId: string, isAdmin: boolean) => {
+const post = await prisma.post.findUniqueOrThrow({
+    where: {
+      id: postId
+    }
+  })
+
+
+  if(!isAdmin && post.authorId !== authorId){
+    throw new Error("You are not the owner of this post")
+  }
+
+  await prisma.post.delete({
+    where: {
+      id: postId
+    }
+  })
+}
+
 export const postService = {
   createPostIntoDB,
   getAllPostsFromDB,
   getAPostByIDFromDB,
   getMyPostFromDB,
-  updatePost
+  updatePostFromDB,
+  deletePostFromDB
 };
