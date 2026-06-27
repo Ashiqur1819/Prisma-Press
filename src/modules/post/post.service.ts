@@ -1,7 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { IPostPayload } from "./post.interface";
 
-
 const createPostIntoDB = async (payload: IPostPayload, authorId: string) => {
   const result = await prisma.post.create({
     data: {
@@ -18,8 +17,8 @@ const getAllPostsFromDB = async () => {
     include: {
       author: {
         omit: {
-            password: true
-        }
+          password: true,
+        },
       },
       comments: true,
     },
@@ -28,7 +27,37 @@ const getAllPostsFromDB = async () => {
   return posts;
 };
 
+const getAPostByIDFromDB = async (postId: string) => {
+  const post = await prisma.post.findUniqueOrThrow({
+    where: {
+      id: postId,
+    },
+  });
+
+  const updatedPost = await prisma.post.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+    include: {
+      author: {
+        omit: {
+          password: true,
+        },
+      },
+      comments: true,
+    },
+  });
+
+  return updatedPost
+};
+
 export const postService = {
   createPostIntoDB,
   getAllPostsFromDB,
+  getAPostByIDFromDB,
 };
