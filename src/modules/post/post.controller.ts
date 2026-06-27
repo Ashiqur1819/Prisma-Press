@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { Request, Response, NextFunction } from "express";
-import { postService } from "./auth.service";
+import { postService } from "./post.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
 
@@ -22,6 +22,20 @@ const createPost = catchAsync(
   },
 );
 
+const getAllPosts = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const posts = await postService.getAllPostsFromDB();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All posts retrieved successfully",
+      data: posts,
+    });
+  },
+);
+
 export const postController = {
   createPost,
+  getAllPosts,
 };

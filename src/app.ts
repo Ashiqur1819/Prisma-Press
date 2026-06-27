@@ -4,7 +4,7 @@ import cors from "cors";
 import config from "./config";
 import { authRouter } from "./modules/auth/auth.route";
 import { userRouter } from "./modules/user/user.route";
-import { postRouter } from "./modules/post/auth.route";
+import { postRouter } from "./modules/post/post.route";
 
 const app: Application = express();
 
