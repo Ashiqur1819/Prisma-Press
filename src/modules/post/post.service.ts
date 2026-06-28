@@ -1,3 +1,4 @@
+import { CommentStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { IPostPayload, IUpdatePostPayload } from "./post.interface";
 
@@ -184,6 +185,57 @@ const deletePostFromDB = async (
   });
 };
 
+const getPostStats = async () => {
+  const trasactionResult = await prisma.$transaction(async (tx) => {
+    const totalPosts = await tx.post.count()
+
+    const totalPublishedPost = await tx.post.count({
+      where: {
+        status: "PUBLISHED"
+      }
+    })
+    const totalDraftPosts = await tx.post.count({
+      where: {
+        status: "DRAFT"
+      }
+    })
+
+    const totalComments = await tx.comment.count()
+
+    const totalApprovedComments = await tx.comment.count({
+      where: {
+        status: CommentStatus.APPROVED
+      }
+    })
+
+    const totalRejectedComments = await tx.comment.count({
+      where: {
+        status: CommentStatus.REJECT
+      }
+    })
+
+    const totalPostViewsAggregate = await prisma.post.aggregate({
+      _sum: {
+        views: true
+      }
+    })
+
+    const totalPostViews = totalPostViewsAggregate._sum.views
+
+    return {
+      totalPosts,
+      totalPublishedPost,
+      totalDraftPosts,
+      totalComments,
+      totalApprovedComments,
+      totalRejectedComments,
+      totalPostViews
+    }
+  })
+
+  return trasactionResult
+}
+
 export const postService = {
   createPostIntoDB,
   getAllPostsFromDB,
@@ -191,4 +243,5 @@ export const postService = {
   getMyPostFromDB,
   updatePostFromDB,
   deletePostFromDB,
+  getPostStats
 };
