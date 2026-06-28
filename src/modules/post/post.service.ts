@@ -187,41 +187,78 @@ const deletePostFromDB = async (
 
 const getPostStats = async () => {
   const trasactionResult = await prisma.$transaction(async (tx) => {
-    const totalPosts = await tx.post.count()
+    // const totalPosts = await tx.post.count()
 
-    const totalPublishedPost = await tx.post.count({
-      where: {
-        status: "PUBLISHED"
-      }
-    })
-    const totalDraftPosts = await tx.post.count({
-      where: {
-        status: "DRAFT"
-      }
-    })
+    // const totalPublishedPost = await tx.post.count({
+    //   where: {
+    //     status: "PUBLISHED"
+    //   }
+    // })
+    // const totalDraftPosts = await tx.post.count({
+    //   where: {
+    //     status: "DRAFT"
+    //   }
+    // })
 
-    const totalComments = await tx.comment.count()
+    // const totalComments = await tx.comment.count()
 
-    const totalApprovedComments = await tx.comment.count({
-      where: {
-        status: CommentStatus.APPROVED
-      }
-    })
+    // const totalApprovedComments = await tx.comment.count({
+    //   where: {
+    //     status: CommentStatus.APPROVED
+    //   }
+    // })
 
-    const totalRejectedComments = await tx.comment.count({
-      where: {
-        status: CommentStatus.REJECT
-      }
-    })
+    // const totalRejectedComments = await tx.comment.count({
+    //   where: {
+    //     status: CommentStatus.REJECT
+    //   }
+    // })
 
-    const totalPostViewsAggregate = await prisma.post.aggregate({
-      _sum: {
-        views: true
-      }
-    })
+    // const totalPostViewsAggregate = await prisma.post.aggregate({
+    //   _sum: {
+    //     views: true
+    //   }
+    // })
 
-    const totalPostViews = totalPostViewsAggregate._sum.views
+    // const totalPostViews = totalPostViewsAggregate._sum.views
 
+    const [
+      totalPosts,
+      totalPublishedPost,
+      totalDraftPosts,
+      totalComments,
+      totalApprovedComments,
+      totalRejectedComments,
+      totalPostViewsAggregate,
+    ] = await Promise.all([
+      await tx.post.count(),
+      await tx.post.count({
+        where: {
+          status: "PUBLISHED",
+        },
+      }),
+      await tx.post.count({
+        where: {
+          status: "DRAFT",
+        },
+      }),
+      await tx.comment.count(),
+      await tx.comment.count({
+        where: {
+          status: CommentStatus.APPROVED,
+        },
+      }),
+      await tx.comment.count({
+        where: {
+          status: CommentStatus.REJECT,
+        },
+      }),
+      await prisma.post.aggregate({
+        _sum: {
+          views: true,
+        },
+      }),
+    ]);
     return {
       totalPosts,
       totalPublishedPost,
@@ -229,12 +266,12 @@ const getPostStats = async () => {
       totalComments,
       totalApprovedComments,
       totalRejectedComments,
-      totalPostViews
-    }
-  })
+      totalPostViews: totalPostViewsAggregate._sum.views,
+    };
+  });
 
-  return trasactionResult
-}
+  return trasactionResult;
+};
 
 export const postService = {
   createPostIntoDB,
@@ -243,5 +280,5 @@ export const postService = {
   getMyPostFromDB,
   updatePostFromDB,
   deletePostFromDB,
-  getPostStats
+  getPostStats,
 };
