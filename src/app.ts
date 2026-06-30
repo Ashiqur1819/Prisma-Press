@@ -5,6 +5,7 @@ import config from "./config";
 import { authRouter } from "./modules/auth/auth.route";
 import { userRouter } from "./modules/user/user.route";
 import { postRouter } from "./modules/post/post.route";
+import notFound from "./middlewares/notFound";
 
 const app: Application = express();
 
@@ -26,5 +27,8 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
+
+
+app.use(notFound)
 
 export default app;
