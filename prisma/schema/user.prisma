@@ -11,6 +11,7 @@ model User {
     comment      Comment[]
     posts Post[]
     subscription Subscription?
+    isPremium Boolean @default(false)
 
     @@map("users")
 }
